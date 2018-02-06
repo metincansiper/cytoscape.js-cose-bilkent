@@ -13,6 +13,20 @@ for (var prop in FDLayoutNode) {
 
 CoSENode.prototype.move = function ()
 {
+
+  // clears the forces calculated for the node
+  var clearForces = function()
+  {
+    this.springForceX = 0;
+    this.springForceY = 0;
+    this.repulsionForceX = 0;
+    this.repulsionForceY = 0;
+    this.gravitationForceX = 0;
+    this.gravitationForceY = 0;
+    this.displacementX = 0;
+    this.displacementY = 0;
+  }
+
   var layout = this.graphManager.getLayout();
   this.displacementX = layout.coolingFactor *
           (this.springForceX + this.repulsionForceX + this.gravitationForceX) / this.noOfChildren;
@@ -30,6 +44,43 @@ CoSENode.prototype.move = function ()
   {
     this.displacementY = layout.coolingFactor * layout.maxNodeDisplacement *
             IMath.sign(this.displacementY);
+  }
+
+  // whether to cancel displacement
+  // discplacement could be canceled if any of the min/max borders is exceed
+  var cancelDisplacement = false;
+
+  // check horizontal borders
+  if (this.minX !== undefined || this.maxX !== undefined)
+  {
+    // calculate the expected X coordinate after displacement is performed
+    var expectedX = this.rect.x + this.displacementX;
+
+    if ( ( this.maxX !== undefined && expectedX + this.rect.width > this.maxX )
+          || this.minX !== undefined && expectedX < this.minX ) {
+
+      cancelDisplacement = true;
+    }
+  }
+
+  // check vertical borders
+  if (this.minY !== undefined || this.maxY !== undefined)
+  {
+    // calculate the expected Y coordinate after displacement is performed
+    var expectedY = this.rect.y + this.displacementY;
+
+    if ( ( this.maxY !== undefined && expectedY + this.rect.width > this.maxY )
+          || this.minY !== undefined && expectedY < this.minY ) {
+
+      cancelDisplacement = true;
+    }
+  }
+
+  // if displacement is canceled just clear the forces and return
+  if ( cancelDisplacement )
+  {
+      clearForces.call(this);
+      return;
   }
 
   // a simple node, just move it
@@ -52,14 +103,7 @@ CoSENode.prototype.move = function ()
   layout.totalDisplacement +=
           Math.abs(this.displacementX) + Math.abs(this.displacementY);
 
-  this.springForceX = 0;
-  this.springForceY = 0;
-  this.repulsionForceX = 0;
-  this.repulsionForceY = 0;
-  this.gravitationForceX = 0;
-  this.gravitationForceY = 0;
-  this.displacementX = 0;
-  this.displacementY = 0;
+  clearForces.call(this);
 };
 
 CoSENode.prototype.propogateDisplacementToChildren = function (dX, dY)

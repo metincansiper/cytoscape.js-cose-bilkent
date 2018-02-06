@@ -45,14 +45,33 @@
           layout: {
             name: 'cose-bilkent',
             animate: false,
-            randomize: true
+            randomize: false,
+            nodeBounds: function (ele) {
+              var lineY = -300;
+
+              if (ele.id() === 'glyph9' || ele.id() === 'glyph22' || ele.id() === 'glyph32') {
+                return {
+                  maxY: lineY - ele.height()
+                };
+              }
+
+              return {
+                minY: lineY
+              };
+            }
           },
 
           style: [
             {
               selector: 'node',
               style: {
-                'background-color': '#ad1a66'
+                'background-color': function(ele) {
+                  if (ele.id() === 'glyph9' || ele.id() === 'glyph22' || ele.id() === 'glyph32') {
+                    return 'blue';
+                  }
+
+                  return '#ad1a66';
+                }
               }
             },
 
@@ -77,7 +96,20 @@
             animate: 'end',
             animationEasing: 'ease-out',
             animationDuration: 1000,
-            randomize: true
+            randomize: false,
+            nodeBounds: function (ele) {
+              var lineY = -300;
+
+              if (ele.id() === 'glyph9' || ele.id() === 'glyph22' || ele.id() === 'glyph32') {
+                return {
+                  maxY: lineY - ele.height()
+                };
+              }
+
+              return {
+                minY: lineY
+              };
+            }
           });
 
           layout.run();

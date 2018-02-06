@@ -118,6 +118,34 @@ CoSELayout.prototype.classicLayout = function () {
     }
   }
 
+  var allNodes = this.getAllNodes();
+
+  for (var i = 0; i < allNodes.length; i++) {
+
+    var node = allNodes[i];
+
+    if (node.id === 'glyph9') {
+      console.log('node found');
+    }
+
+    // if the node position is not obeying the bounds adjust it accordingly
+    if (node.minX && node.rect.x < node.minX) {
+      node.rect.x = node.minX;
+    }
+
+    if (node.maxX && node.rect.x + node.rect.width > node.maxX) {
+      node.rect.x = node.maxX - node.rect.width;
+    }
+
+    if (node.minY && node.rect.y < node.minY) {
+      node.rect.y = node.minY;
+    }
+
+    if (node.maxY && node.rect.y + node.rect.height > node.maxY) {
+      node.rect.y = node.maxY - node.rect.height;
+    }
+  }
+
   this.initSpringEmbedder();
   this.runSpringEmbedder();
 

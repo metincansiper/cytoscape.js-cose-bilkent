@@ -367,6 +367,20 @@ _CoSELayout.prototype.processChildrenList = function (parent, children, layout) 
       theNode.rect.y = 0;
     }
 
+    // the bounds for the node that includes minX, minY, maxX. maxY
+    var bounds;
+
+    // if nodeBounds option is defined set bounds accordingly
+    if (this.options.nodeBounds) {
+      bounds = typeof this.options.nodeBounds === 'function' ? this.options.nodeBounds.call(this, theChild)
+                                                            : this.options.nodeBounds;
+    }
+
+    // if bounds is set transmit each bound to the node
+    for (var prop in bounds) {
+      theNode[prop] = bounds[prop];
+    }
+
     if (children_of_children != null && children_of_children.length > 0) {
       var theNewGraph;
       theNewGraph = layout.getGraphManager().add(layout.newGraph(), theNode);
