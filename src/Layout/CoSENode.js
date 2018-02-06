@@ -48,7 +48,8 @@ CoSENode.prototype.move = function ()
 
   // whether to cancel displacement
   // discplacement could be canceled if any of the min/max borders is exceed
-  var cancelDisplacement = false;
+  // var cancelDisplacementX = false;
+  // var cancelDisplacementY = false;
 
   // check horizontal borders
   if (this.minX !== undefined || this.maxX !== undefined)
@@ -59,7 +60,8 @@ CoSENode.prototype.move = function ()
     if ( ( this.maxX !== undefined && expectedX + this.rect.width > this.maxX )
           || this.minX !== undefined && expectedX < this.minX ) {
 
-      cancelDisplacement = true;
+      // cancelDisplacementX = true;
+      this.displacementX = 0;
     }
   }
 
@@ -72,16 +74,17 @@ CoSENode.prototype.move = function ()
     if ( ( this.maxY !== undefined && expectedY + this.rect.width > this.maxY )
           || this.minY !== undefined && expectedY < this.minY ) {
 
-      cancelDisplacement = true;
+      // cancelDisplacementY = true;
+      this.displacementY = 0;
     }
   }
 
-  // if displacement is canceled just clear the forces and return
-  if ( cancelDisplacement )
-  {
-      clearForces.call(this);
-      return;
-  }
+  // if displacement is canceled in both directions just clear the forces and return
+  // if ( cancelDisplacementX && cancelDisplacementY )
+  // {
+  //     clearForces.call(this);
+  //     return;
+  // }
 
   // a simple node, just move it
   if (this.child == null)
