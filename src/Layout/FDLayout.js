@@ -48,7 +48,7 @@ FDLayout.prototype.initParameters = function () {
   this.notAnimatedIterations = 0;
 
   this.useFRGridVariant = FDLayoutConstants.DEFAULT_USE_SMART_REPULSION_RANGE_CALCULATION;
-  
+
   this.grid = [];
   // variables for tree reduction support
   this.prunedNodesAll = [];
@@ -140,14 +140,14 @@ FDLayout.prototype.calcRepulsionForces = function () {
   var processedNodeSet;
 
   if (this.useFRGridVariant)
-  {       
+  {
     if ((this.totalIterations % FDLayoutConstants.GRID_CALCULATION_CHECK_PERIOD == 1 && !this.isTreeGrowing && !this.isGrowthFinished))
-    {       
-      this.updateGrid();  
+    {
+      this.updateGrid();
     }
 
     processedNodeSet = new Set();
-    
+
     // calculate repulsion forces between each nodes and its surrounding
     for (i = 0; i < lNodes.length; i++)
     {
@@ -264,9 +264,9 @@ FDLayout.prototype.calcRepulsionForce = function (nodeA, nodeB) {
 
     repulsionForceX = 2 * overlapAmount[0];
     repulsionForceY = 2 * overlapAmount[1];
-    
+
     var childrenConstant = nodeA.noOfChildren * nodeB.noOfChildren / (nodeA.noOfChildren + nodeB.noOfChildren);
-    
+
     // Apply forces on the two nodes
     nodeA.repulsionForceX -= childrenConstant * repulsionForceX;
     nodeA.repulsionForceY -= childrenConstant * repulsionForceY;
@@ -312,8 +312,8 @@ FDLayout.prototype.calcRepulsionForce = function (nodeA, nodeB) {
     // Project force onto x and y axes
     repulsionForceX = repulsionForce * distanceX / distance;
     repulsionForceY = repulsionForce * distanceY / distance;
-     
-    // Apply forces on the two nodes    
+
+    // Apply forces on the two nodes
     nodeA.repulsionForceX -= repulsionForceX;
     nodeA.repulsionForceY -= repulsionForceY;
     nodeB.repulsionForceX += repulsionForceX;
@@ -401,34 +401,34 @@ FDLayout.prototype.animate = function () {
 
 FDLayout.prototype.calcGrid = function (graph){
 
-  var sizeX = 0; 
+  var sizeX = 0;
   var sizeY = 0;
-  
+
   sizeX = parseInt(Math.ceil((graph.getRight() - graph.getLeft()) / this.repulsionRange));
   sizeY = parseInt(Math.ceil((graph.getBottom() - graph.getTop()) / this.repulsionRange));
-  
-  var grid = new Array(sizeX);
-  
+
+  var grid = [];
+
   for(var i = 0; i < sizeX; i++){
-    grid[i] = new Array(sizeY);    
+    grid[i] = [];
   }
-  
+
   for(var i = 0; i < sizeX; i++){
     for(var j = 0; j < sizeY; j++){
-      grid[i][j] = new Array();    
+      grid[i][j] = [];    
     }
   }
-  
+
   return grid;
 };
 
 FDLayout.prototype.addNodeToGrid = function (v, left, top){
-    
+
   var startX = 0;
   var finishX = 0;
   var startY = 0;
   var finishY = 0;
-  
+
   startX = parseInt(Math.floor((v.getRect().x - left) / this.repulsionRange));
   finishX = parseInt(Math.floor((v.getRect().width + v.getRect().x - left) / this.repulsionRange));
   startY = parseInt(Math.floor((v.getRect().y - top) / this.repulsionRange));
@@ -439,9 +439,9 @@ FDLayout.prototype.addNodeToGrid = function (v, left, top){
     for (var j = startY; j <= finishY; j++)
     {
       this.grid[i][j].push(v);
-      v.setGridCoordinates(startX, finishX, startY, finishY); 
+      v.setGridCoordinates(startX, finishX, startY, finishY);
     }
-  }  
+  }
 
 };
 
@@ -449,72 +449,72 @@ FDLayout.prototype.updateGrid = function() {
   var i;
   var nodeA;
   var lNodes = this.getAllNodes();
-  
-  this.grid = this.calcGrid(this.graphManager.getRoot());   
+
+  this.grid = this.calcGrid(this.graphManager.getRoot());
 
   // put all nodes to proper grid cells
   for (i = 0; i < lNodes.length; i++)
   {
     nodeA = lNodes[i];
     this.addNodeToGrid(nodeA, this.graphManager.getRoot().getLeft(), this.graphManager.getRoot().getTop());
-  } 
+  }
 
 };
 
 FDLayout.prototype.calculateRepulsionForceOfANode = function (nodeA, processedNodeSet){
-  
+
   if ((this.totalIterations % FDLayoutConstants.GRID_CALCULATION_CHECK_PERIOD == 1 && !this.isTreeGrowing && !this.isGrowthFinished) || (this.growTreeIterations % 10 == 1 && this.isTreeGrowing) || (this.afterGrowthIterations % 10 == 1 && this.isGrowthFinished))
   {
     var surrounding = new Set();
     nodeA.surrounding = new Array();
     var nodeB;
     var grid = this.grid;
-    
+
     for (var i = (nodeA.startX - 1); i < (nodeA.finishX + 2); i++)
     {
       for (var j = (nodeA.startY - 1); j < (nodeA.finishY + 2); j++)
       {
         if (!((i < 0) || (j < 0) || (i >= grid.length) || (j >= grid[0].length)))
-        {  
+        {
           for (var k = 0; k < grid[i][j].length; k++) {
             nodeB = grid[i][j][k];
 
-            // If both nodes are not members of the same graph, 
+            // If both nodes are not members of the same graph,
             // or both nodes are the same, skip.
             if ((nodeA.getOwner() != nodeB.getOwner()) || (nodeA == nodeB))
             {
               continue;
             }
-            
+
             // check if the repulsion force between
             // nodeA and nodeB has already been calculated
             if (!processedNodeSet.has(nodeB) && !surrounding.has(nodeB))
             {
-              var distanceX = Math.abs(nodeA.getCenterX()-nodeB.getCenterX()) - 
+              var distanceX = Math.abs(nodeA.getCenterX()-nodeB.getCenterX()) -
                     ((nodeA.getWidth()/2) + (nodeB.getWidth()/2));
-              var distanceY = Math.abs(nodeA.getCenterY()-nodeB.getCenterY()) - 
+              var distanceY = Math.abs(nodeA.getCenterY()-nodeB.getCenterY()) -
                     ((nodeA.getHeight()/2) + (nodeB.getHeight()/2));
-            
-              // if the distance between nodeA and nodeB 
+
+              // if the distance between nodeA and nodeB
               // is less then calculation range
               if ((distanceX <= this.repulsionRange) && (distanceY <= this.repulsionRange))
               {
                 //then add nodeB to surrounding of nodeA
                 surrounding.add(nodeB);
-              }              
-            }    
+              }
+            }
           }
-        }          
+        }
       }
     }
 
     nodeA.surrounding = [...surrounding];
-	
+
   }
   for (i = 0; i < nodeA.surrounding.length; i++)
   {
     this.calcRepulsionForce(nodeA, nodeA.surrounding[i]);
-  }	
+  }
 };
 
 FDLayout.prototype.calcRepulsionRange = function () {
@@ -524,30 +524,30 @@ FDLayout.prototype.calcRepulsionRange = function () {
 // -----------------------------------------------------------------------------
 // Section: Tree Reduction methods
 // -----------------------------------------------------------------------------
-// Reduce trees 
+// Reduce trees
 FDLayout.prototype.reduceTrees = function ()
 {
   var prunedNodesAll = [];
   var containsLeaf = true;
   var node;
-  
+
   while(containsLeaf) {
     var allNodes = this.graphManager.getAllNodes();
     var prunedNodesInStepTemp = [];
     containsLeaf = false;
-    
+
     for (var i = 0; i < allNodes.length; i++) {
       node = allNodes[i];
       if(node.getEdges().length == 1 && !node.getEdges()[0].isInterGraph && node.getChild() == null){
         prunedNodesInStepTemp.push([node, node.getEdges()[0], node.getOwner()]);
         containsLeaf = true;
-      }  
+      }
     }
     if(containsLeaf == true){
       var prunedNodesInStep = [];
       for(var j = 0; j < prunedNodesInStepTemp.length; j++){
         if(prunedNodesInStepTemp[j][0].getEdges().length == 1){
-          prunedNodesInStep.push(prunedNodesInStepTemp[j]);  
+          prunedNodesInStep.push(prunedNodesInStepTemp[j]);
           prunedNodesInStepTemp[j][0].getOwner().remove(prunedNodesInStepTemp[j][0]);
         }
       }
@@ -559,18 +559,18 @@ FDLayout.prototype.reduceTrees = function ()
   this.prunedNodesAll = prunedNodesAll;
 };
 
-// Grow tree one step 
+// Grow tree one step
 FDLayout.prototype.growTree = function(prunedNodesAll)
 {
-  var lengthOfPrunedNodesInStep = prunedNodesAll.length; 
-  var prunedNodesInStep = prunedNodesAll[lengthOfPrunedNodesInStep - 1];  
+  var lengthOfPrunedNodesInStep = prunedNodesAll.length;
+  var prunedNodesInStep = prunedNodesAll[lengthOfPrunedNodesInStep - 1];
 
-  var nodeData;  
+  var nodeData;
   for(var i = 0; i < prunedNodesInStep.length; i++){
     nodeData = prunedNodesInStep[i];
 
     this.findPlaceforPrunedNode(nodeData);
-    
+
     nodeData[2].add(nodeData[0]);
     nodeData[2].add(nodeData[1], nodeData[1].source, nodeData[1].target);
   }
@@ -582,45 +582,45 @@ FDLayout.prototype.growTree = function(prunedNodesAll)
 
 // Find an appropriate position to replace pruned node, this method can be improved
 FDLayout.prototype.findPlaceforPrunedNode = function(nodeData){
-  
-  var gridForPrunedNode;  
+
+  var gridForPrunedNode;
   var nodeToConnect;
   var prunedNode = nodeData[0];
   if(prunedNode == nodeData[1].source){
     nodeToConnect = nodeData[1].target;
   }
   else {
-    nodeToConnect = nodeData[1].source;  
+    nodeToConnect = nodeData[1].source;
   }
   var startGridX = nodeToConnect.startX;
   var finishGridX = nodeToConnect.finishX;
   var startGridY = nodeToConnect.startY;
-  var finishGridY = nodeToConnect.finishY; 
-  
+  var finishGridY = nodeToConnect.finishY;
+
   var upNodeCount = 0;
   var downNodeCount = 0;
   var rightNodeCount = 0;
   var leftNodeCount = 0;
   var controlRegions = [upNodeCount, rightNodeCount, downNodeCount, leftNodeCount]
-  
+
   if(startGridY > 0){
     for(var i = startGridX; i <= finishGridX; i++ ){
-      controlRegions[0] += (this.grid[i][startGridY - 1].length + this.grid[i][startGridY].length - 1);   
+      controlRegions[0] += (this.grid[i][startGridY - 1].length + this.grid[i][startGridY].length - 1);
     }
   }
   if(finishGridX < this.grid.length - 1){
     for(var i = startGridY; i <= finishGridY; i++ ){
-      controlRegions[1] += (this.grid[finishGridX + 1][i].length + this.grid[finishGridX][i].length - 1);   
+      controlRegions[1] += (this.grid[finishGridX + 1][i].length + this.grid[finishGridX][i].length - 1);
     }
   }
   if(finishGridY < this.grid[0].length - 1){
     for(var i = startGridX; i <= finishGridX; i++ ){
-      controlRegions[2] += (this.grid[i][finishGridY + 1].length + this.grid[i][finishGridY].length - 1);   
+      controlRegions[2] += (this.grid[i][finishGridY + 1].length + this.grid[i][finishGridY].length - 1);
     }
   }
   if(startGridX > 0){
     for(var i = startGridY; i <= finishGridY; i++ ){
-      controlRegions[3] += (this.grid[startGridX - 1][i].length + this.grid[startGridX][i].length - 1);   
+      controlRegions[3] += (this.grid[startGridX - 1][i].length + this.grid[startGridX][i].length - 1);
     }
   }
   var min = Integer.MAX_VALUE;
@@ -631,24 +631,24 @@ FDLayout.prototype.findPlaceforPrunedNode = function(nodeData){
       min = controlRegions[j];
       minCount = 1;
       minIndex = j;
-    }  
+    }
     else if(controlRegions[j] == min){
-      minCount++;  
+      minCount++;
     }
   }
-  
+
   if(minCount == 3 && min == 0){
     if(controlRegions[0] == 0 && controlRegions[1] == 0 && controlRegions[2] == 0){
-      gridForPrunedNode = 1;    
+      gridForPrunedNode = 1;
     }
     else if(controlRegions[0] == 0 && controlRegions[1] == 0 && controlRegions[3] == 0){
-      gridForPrunedNode = 0;  
+      gridForPrunedNode = 0;
     }
     else if(controlRegions[0] == 0 && controlRegions[2] == 0 && controlRegions[3] == 0){
-      gridForPrunedNode = 3;  
+      gridForPrunedNode = 3;
     }
     else if(controlRegions[1] == 0 && controlRegions[2] == 0 && controlRegions[3] == 0){
-      gridForPrunedNode = 2;  
+      gridForPrunedNode = 2;
     }
   }
   else if(minCount == 2 && min == 0){
@@ -704,29 +704,29 @@ FDLayout.prototype.findPlaceforPrunedNode = function(nodeData){
   }
   else if(minCount == 4 && min == 0){
     var random = Math.floor(Math.random() * 4);
-    gridForPrunedNode = random;  
+    gridForPrunedNode = random;
   }
   else {
     gridForPrunedNode = minIndex;
   }
-  
+
   if(gridForPrunedNode == 0) {
     prunedNode.setCenter(nodeToConnect.getCenterX(),
-                         nodeToConnect.getCenterY() - nodeToConnect.getHeight()/2 - FDLayoutConstants.DEFAULT_EDGE_LENGTH - prunedNode.getHeight()/2);  
+                         nodeToConnect.getCenterY() - nodeToConnect.getHeight()/2 - FDLayoutConstants.DEFAULT_EDGE_LENGTH - prunedNode.getHeight()/2);
   }
   else if(gridForPrunedNode == 1) {
     prunedNode.setCenter(nodeToConnect.getCenterX() + nodeToConnect.getWidth()/2 + FDLayoutConstants.DEFAULT_EDGE_LENGTH + prunedNode.getWidth()/2,
-                         nodeToConnect.getCenterY());  
+                         nodeToConnect.getCenterY());
   }
   else if(gridForPrunedNode == 2) {
     prunedNode.setCenter(nodeToConnect.getCenterX(),
-                         nodeToConnect.getCenterY() + nodeToConnect.getHeight()/2 + FDLayoutConstants.DEFAULT_EDGE_LENGTH + prunedNode.getHeight()/2);  
+                         nodeToConnect.getCenterY() + nodeToConnect.getHeight()/2 + FDLayoutConstants.DEFAULT_EDGE_LENGTH + prunedNode.getHeight()/2);
   }
-  else { 
+  else {
     prunedNode.setCenter(nodeToConnect.getCenterX() - nodeToConnect.getWidth()/2 - FDLayoutConstants.DEFAULT_EDGE_LENGTH - prunedNode.getWidth()/2,
-                         nodeToConnect.getCenterY());  
+                         nodeToConnect.getCenterY());
   }
-  
+
 };
 
 module.exports = FDLayout;

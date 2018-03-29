@@ -3481,7 +3481,7 @@ FDLayout.prototype.calcRepulsionForce = function (nodeA, nodeB) {
       repulsionForceX = repulsionForce * distanceX / distance;
       repulsionForceY = repulsionForce * distanceY / distance;
 
-      // Apply forces on the two nodes    
+      // Apply forces on the two nodes
       nodeA.repulsionForceX -= repulsionForceX;
       nodeA.repulsionForceY -= repulsionForceY;
       nodeB.repulsionForceX += repulsionForceX;
@@ -3564,15 +3564,15 @@ FDLayout.prototype.calcGrid = function (graph) {
   sizeX = parseInt(Math.ceil((graph.getRight() - graph.getLeft()) / this.repulsionRange));
   sizeY = parseInt(Math.ceil((graph.getBottom() - graph.getTop()) / this.repulsionRange));
 
-  var grid = new Array(sizeX);
+  var grid = [];
 
   for (var i = 0; i < sizeX; i++) {
-    grid[i] = new Array(sizeY);
+    grid[i] = [];
   }
 
   for (var i = 0; i < sizeX; i++) {
     for (var j = 0; j < sizeY; j++) {
-      grid[i][j] = new Array();
+      grid[i][j] = [];
     }
   }
 
@@ -3627,7 +3627,7 @@ FDLayout.prototype.calculateRepulsionForceOfANode = function (nodeA, processedNo
           for (var k = 0; k < grid[i][j].length; k++) {
             nodeB = grid[i][j][k];
 
-            // If both nodes are not members of the same graph, 
+            // If both nodes are not members of the same graph,
             // or both nodes are the same, skip.
             if (nodeA.getOwner() != nodeB.getOwner() || nodeA == nodeB) {
               continue;
@@ -3639,7 +3639,7 @@ FDLayout.prototype.calculateRepulsionForceOfANode = function (nodeA, processedNo
               var distanceX = Math.abs(nodeA.getCenterX() - nodeB.getCenterX()) - (nodeA.getWidth() / 2 + nodeB.getWidth() / 2);
               var distanceY = Math.abs(nodeA.getCenterY() - nodeB.getCenterY()) - (nodeA.getHeight() / 2 + nodeB.getHeight() / 2);
 
-              // if the distance between nodeA and nodeB 
+              // if the distance between nodeA and nodeB
               // is less then calculation range
               if (distanceX <= this.repulsionRange && distanceY <= this.repulsionRange) {
                 //then add nodeB to surrounding of nodeA
@@ -3665,7 +3665,7 @@ FDLayout.prototype.calcRepulsionRange = function () {
 // -----------------------------------------------------------------------------
 // Section: Tree Reduction methods
 // -----------------------------------------------------------------------------
-// Reduce trees 
+// Reduce trees
 FDLayout.prototype.reduceTrees = function () {
   var prunedNodesAll = [];
   var containsLeaf = true;
@@ -3699,7 +3699,7 @@ FDLayout.prototype.reduceTrees = function () {
   this.prunedNodesAll = prunedNodesAll;
 };
 
-// Grow tree one step 
+// Grow tree one step
 FDLayout.prototype.growTree = function (prunedNodesAll) {
   var lengthOfPrunedNodesInStep = prunedNodesAll.length;
   var prunedNodesInStep = prunedNodesAll[lengthOfPrunedNodesInStep - 1];
@@ -4296,12 +4296,12 @@ _CoSELayout.prototype.processChildrenList = function (parent, children, layout) 
     // Attach id to the layout node
     theNode.id = theChild.data("id");
     // Attach the paddings of cy node to layout node
-    theNode.paddingLeft = parseInt(theChild.css('padding'));
-    theNode.paddingTop = parseInt(theChild.css('padding'));
-    theNode.paddingRight = parseInt(theChild.css('padding'));
-    theNode.paddingBottom = parseInt(theChild.css('padding'));
+    theNode.paddingLeft = 0;
+    theNode.paddingTop = 0;
+    theNode.paddingRight = 0;
+    theNode.paddingBottom = 0;
 
-    //Attach the label properties to compound if labels will be included in node dimensions  
+    //Attach the label properties to compound if labels will be included in node dimensions
     if (this.options.nodeDimensionsIncludeLabels) {
       if (theChild.isParent()) {
         var labelWidth = theChild.boundingBox({ includeLabels: true, includeNodes: false }).w;

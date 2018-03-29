@@ -125,9 +125,9 @@ var getUserOptions = function (options) {
           !(options.randomize);
   CoSEConstants.ANIMATE = FDLayoutConstants.ANIMATE = LayoutConstants.ANIMATE = options.animate;
   CoSEConstants.TILE = options.tile;
-  CoSEConstants.TILING_PADDING_VERTICAL = 
+  CoSEConstants.TILING_PADDING_VERTICAL =
           typeof options.tilingPaddingVertical === 'function' ? options.tilingPaddingVertical.call() : options.tilingPaddingVertical;
-  CoSEConstants.TILING_PADDING_HORIZONTAL = 
+  CoSEConstants.TILING_PADDING_HORIZONTAL =
           typeof options.tilingPaddingHorizontal === 'function' ? options.tilingPaddingHorizontal.call() : options.tilingPaddingHorizontal;
 };
 
@@ -138,7 +138,7 @@ _CoSELayout.prototype.run = function () {
   var idToLNode = this.idToLNode = {};
   var layout = this.layout = new CoSELayout();
   var self = this;
-  
+
   self.stopped = false;
 
   this.cy = this.options.cy;
@@ -164,7 +164,7 @@ _CoSELayout.prototype.run = function () {
       e1.id = edge.id();
     }
   }
-  
+
    var getPositions = function(ele, i){
     if(typeof ele === "number") {
       ele = i;
@@ -177,7 +177,7 @@ _CoSELayout.prototype.run = function () {
       y: lNode.getRect().getCenterY()
     };
   };
-  
+
   /*
    * Reposition nodes in iterations animatedly
    */
@@ -194,32 +194,32 @@ _CoSELayout.prototype.run = function () {
         self.cy.trigger({type: 'layoutready', layout: self});
       }
     };
-    
+
     var ticksPerFrame = self.options.refresh;
     var isDone;
 
     for( var i = 0; i < ticksPerFrame && !isDone; i++ ){
       isDone = self.stopped || self.layout.tick();
     }
-    
+
     // If layout is done
     if (isDone) {
       // If the layout is not a sublayout and it is successful perform post layout.
       if (layout.checkLayoutSuccess() && !layout.isSubLayout) {
         layout.doPostLayout();
       }
-      
+
       // If layout has a tilingPostLayout function property call it.
       if (layout.tilingPostLayout) {
         layout.tilingPostLayout();
       }
-      
+
       layout.isLayoutFinished = true;
-      
+
       self.options.eles.nodes().positions(getPositions);
-      
+
       afterReposition();
-      
+
       // trigger layoutstop when the layout stops (e.g. finishes)
       self.cy.one('layoutstop', self.options.stop);
       self.cy.trigger({ type: 'layoutstop', layout: self });
@@ -227,13 +227,13 @@ _CoSELayout.prototype.run = function () {
       if (frameId) {
         cancelAnimationFrame(frameId);
       }
-      
+
       ready = false;
       return;
     }
-    
+
     var animationData = self.layout.getPositionsData(); // Get positions of layout nodes note that all nodes may not be layout nodes because of tiling
-    
+
     // Position nodes, for the nodes whose id does not included in data (because they are removed from their parents and included in dummy compounds)
     // use position of their ancestors or dummy ancestors
     options.eles.nodes().positions(function (ele, i) {
@@ -270,7 +270,7 @@ _CoSELayout.prototype.run = function () {
 
     frameId = requestAnimationFrame(iterateAnimated);
   };
-  
+
   /*
   * Listen 'layoutstarted' event and start animated iteration if animate option is 'during'
   */
@@ -279,9 +279,9 @@ _CoSELayout.prototype.run = function () {
       frameId = requestAnimationFrame(iterateAnimated);
     }
   });
-  
+
   layout.runLayout(); // Run cose layout
-  
+
   /*
    * If animate option is not 'during' ('end' or false) perform these here (If it is 'during' similar things are already performed)
    */
@@ -321,7 +321,7 @@ _CoSELayout.prototype.processChildrenList = function (parent, children, layout) 
   for (var i = 0; i < size; i++) {
     var theChild = children[i];
     var children_of_children = theChild.children();
-    var theNode;    
+    var theNode;
 
     var dimensions = theChild.layoutDimensions({
       nodeDimensionsIncludeLabels: this.options.nodeDimensionsIncludeLabels
@@ -339,15 +339,15 @@ _CoSELayout.prototype.processChildrenList = function (parent, children, layout) 
     // Attach id to the layout node
     theNode.id = theChild.data("id");
     // Attach the paddings of cy node to layout node
-    theNode.paddingLeft = parseInt( theChild.css('padding') );
-    theNode.paddingTop = parseInt( theChild.css('padding') );
-    theNode.paddingRight = parseInt( theChild.css('padding') );
-    theNode.paddingBottom = parseInt( theChild.css('padding') );
-    
-    //Attach the label properties to compound if labels will be included in node dimensions  
+    theNode.paddingLeft = 0;
+    theNode.paddingTop = 0;
+    theNode.paddingRight = 0;
+    theNode.paddingBottom = 0;
+
+    //Attach the label properties to compound if labels will be included in node dimensions
     if(this.options.nodeDimensionsIncludeLabels){
       if(theChild.isParent()){
-          var labelWidth = theChild.boundingBox({ includeLabels: true, includeNodes: false }).w;          
+          var labelWidth = theChild.boundingBox({ includeLabels: true, includeNodes: false }).w;
           var labelHeight = theChild.boundingBox({ includeLabels: true, includeNodes: false }).h;
           var labelPos = theChild.css("text-halign");
           theNode.labelWidth = labelWidth;
@@ -355,7 +355,7 @@ _CoSELayout.prototype.processChildrenList = function (parent, children, layout) 
           theNode.labelPos = labelPos;
       }
     }
-    
+
     // Map the layout node
     this.idToLNode[theChild.data("id")] = theNode;
 
